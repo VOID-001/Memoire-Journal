@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  /* Beach Palette */
+  --color-background: #f3e3d0; /* Sand */
+  --color-foreground: #524B66; /* Muted Ink for rich contrast text */
+  --color-accent: #81a6c6;     /* Ocean Blue */
+  --color-accent-muted: #aacddc; /* Sky Light */
+  
+  --color-ink: #1E1830;
+  --color-paper: #FFFDFE;
+  --color-driftwood: #d2c4b4;
+  --color-ocean: #81a6c6;
+  --color-sky: #aacddc;
+
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "DM Sans", sans-serif;
+
+  /* Adding custom fade-in animation for layout transitions */
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+}
+
+:root {
+  --background: #f3e3d0;
+  --foreground: #524B66;
+  --accent: #81a6c6;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Paper Grain Overlay - lighter for beach theme */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 50;
+  mix-blend-mode: overlay;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--ink);
+}
+
+/* Custom scrollbar - soft beach theme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--driftwood);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ocean);
+}
+
+/* Animations */
+@keyframes drifting {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-10px) translateX(5px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-drift {
+  animation: drifting 8s ease-in-out infinite;
+}
+
+/* Updated Glass Card for the light beach overlay */
+.glass-card {
+  background: rgba(255, 253, 254, 0.4); /* soft paper */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12px 40px 0 rgba(129, 166, 198, 0.15);
+  transition: all 0.4s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(129, 166, 198, 0.4);
+  background: rgba(255, 253, 254, 0.5);
+}
