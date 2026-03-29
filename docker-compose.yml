@@ -1,0 +1,110 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/nextjs.Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL_EXTRACTION=${GEMINI_MODEL_EXTRACTION}
+      - GEMINI_MODEL_PERSONA=${GEMINI_MODEL_PERSONA}
+      - JWT_SECRET=${JWT_SECRET}
+      - MEMGRAPH_URI=bolt://memgraph:7687
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - memoire-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/journal?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma db push --accept-data-loss && npm start"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/journal/list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - memoire-net
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: journal
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d journal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - memoire-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+    networks:
+      - memoire-net
+
+  memgraph:
+    image: memgraph/memgraph-mage:latest
+    container_name: memgraph-mage
+    ports:
+      - "7687:7687"
+      - "9091:9091"
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+      - mg_etc:/etc/memgraph
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'RETURN 1;' | mgconsole --host 127.0.0.1 --port 7687"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - memoire-net
+
+  memgraph-lab:
+    image: memgraph/lab:latest
+    container_name: memgraph-lab
+    ports:
+      - "3002:3000"
+    depends_on:
+      - memgraph
+    networks:
+      - memoire-net
+
+networks:
+  memoire-net:
+    driver: bridge
+
+volumes:
+  mg_lib:
+  mg_log:
+  mg_etc:
+  pg_data:

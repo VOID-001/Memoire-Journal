@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String         @id @default(uuid())
+  email     String         @unique
+  createdAt DateTime       @default(now())
+
+  entries   JournalEntry[]
+}
+
+model JournalEntry {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
+  messages  Message[]
+
+  @@unique([userId, date]) // one conversation per day
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  entryId   String
+  role      Role
+  content   String
+  createdAt DateTime @default(now())
+
+  entry     JournalEntry @relation(fields: [entryId], references: [id])
+}
+
+enum Role {
+  USER
+  AI
+}

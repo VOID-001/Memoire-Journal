@@ -1,0 +1,32 @@
+# IDE and OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+
+# Build and Temp
+.next/
+**/ .next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Docker
+.docker/
+
+# Prisma
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
