@@ -17,7 +17,7 @@ export default function HomeView() {
       <div className="w-full xl:w-[400px] shrink-0 space-y-8 flex flex-col h-full HideScrollbar overflow-y-auto pr-4">
           
           <h1 className="text-4xl font-bold font-serif text-ink tracking-tight mb-2">
-             Hi, Jose Maria
+             Hi, Void
           </h1>
           <p className="text-foreground/60 text-sm mb-6 uppercase tracking-widest font-semibold">It's a beautiful day to reflect.</p>
           
